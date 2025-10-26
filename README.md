@@ -1,13 +1,5 @@
 # Eco Denúncia
 
-Sistema baseado em microsserviços para registro e análise de denúncias de golpes.
-
-Este projeto foi desenvolvido para as Unidades Curriculares de **Sistemas Distribuídos** e **Mobile & Usabilidade**, com foco em desenvolvimento web, mobile e jogos.
-
-**Empresa parceira:** Banco Bradesco# Eco Denúncia
-
-Sistema baseado em microsserviços para registro e análise de denúncias de golpes.
-
 Este projeto foi desenvolvido para as Unidades Curriculares de **Sistemas Distribuídos** e **Mobile & Usabilidade**, com foco em desenvolvimento web, mobile e jogos.
 
 **Empresa parceira:** Banco Bradesco
