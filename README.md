@@ -1,6 +1,6 @@
 # Eco Denúncia
 
-Este projeto foi desenvolvido para as Unidades Curriculares de **Sistemas Distribuídos** e **Mobile & Usabilidade**, com foco em desenvolvimento web, mobile e jogos.
+Projeto desenvolvido para as disciplinas **Sistemas Distribuídos** e **Mobile & Usabilidade** com foco em desenvolvimento web, mobile e jogos.
 
 **Empresa parceira:** Banco Bradesco
 
@@ -15,10 +15,72 @@ Este projeto foi desenvolvido para as Unidades Curriculares de **Sistemas Distri
 
 ---
 
-## Modelagem do Banco de Dados
+## Banco de Dados — visão geral
 
-Abaixo está o diagrama MER (Modelo Entidade-Relacionamento) utilizado para a modelagem do banco de dados do sistema:
+Este projeto usa duas bases SQLite separadas, cada uma responsabilizando-se por um contexto distinto (padrão microserviços):
 
-![Diagrama MER](./mer-diagrama.png)
+- `denuncias_coments.db` — dados de usuários e autenticação/autorização.
+- `usuarios.db` — dados de denúncias e comentários.
 
-> **Nota:** O diagrama acima representa as entidades, seus atributos e os relacionamentos entre elas, conforme as necessidades do sistema.
+Separar os bancos facilita isolamento de responsabilidade e escalonamento independente. As imagens MER no repositório ilustram o modelo lógico/relacional:
+
+- `mer-usuarios.png` (modelo de usuários)
+- `mer-denuncias-coments.png` (modelo de denúncias e comentários)
+
+> Observação: os nomes dos arquivos de banco são os usados pelo projeto; ajuste os caminhos conforme sua instalação/ambiente.
+
+### Scripts DDL (SQLite)
+
+1) Banco `usuarios.db` (autenticação / autorização)
+
+```sql
+CREATE TABLE IF NOT EXISTS Usuarios (
+    ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nome VARCHAR(100) NOT NULL,
+    Email VARCHAR(255) NOT NULL UNIQUE,
+    Senha VARCHAR(255) NOT NULL,
+    Idade INT,
+    Sexo VARCHAR(10)
+);
+```
+
+2) Banco `denuncias_coments.db` (denúncias e comentários)
+
+```sql
+CREATE TABLE IF NOT EXISTS Denuncias (
+    ID_Denuncia INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nome_Denuncia VARCHAR(150),
+    Canal VARCHAR(50),
+    Tipo VARCHAR(50),
+    Descricao_Denuncia TEXT,
+    Data_Ocorrido DATETIME,
+    Data_Denuncia DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ID_Usuario INTEGER NOT NULL
+);
+
+CREATE TABLE IF  NOT EXISTS Comentarios (
+    ID_Coment INTEGER PRIMARY KEY AUTOINCREMENT,
+    Conteudo TEXT NOT NULL,
+    Data_Coment DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ID_Usuario INTEGER NOT NULL,
+    ID_Denuncia INTEGER NOT NULL, 
+    FOREIGN KEY (ID_Denuncia) REFERENCES Denuncias (ID_Denuncia) ON DELETE CASCADE
+);
+```
+
+### Explicação dos relacionamentos e integridade
+
+- A tabela `Comentarios` referencia `Denuncias` por `ID_Denuncia`. Definimos `ON DELETE CASCADE` para que, se uma denúncia for removida, seus comentários associados também sejam removidos automaticamente — isso mantém integridade referencial sem sobras.
+- Não há chave estrangeira declarando `ID_Usuario` como FK nesta documentação (poderia haver), pois os usuários vivem em outro banco (`usuarios.db`).
+
+Alternativa visual: use o DB Browser for SQLite (gratuito) para inspecionar e editar os arquivos `.db` com GUI.
+
+### Exemplos de consultas comuns
+
+```sql
+-- listar denúncias de um usuário
+SELECT * FROM Denuncias WHERE ID_Usuario = ? ORDER BY Data_Denuncia DESC;
+
+-- obter comentários de uma denúncia
+SELECT * FROM Comentarios WHERE ID_Denuncia = ? ORDER BY Data_Coment ASC;
+```
