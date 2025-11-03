@@ -17,17 +17,15 @@ Projeto desenvolvido para as disciplinas **Sistemas Distribuídos** e **Mobile &
 
 ## Banco de Dados — visão geral
 
-Este projeto usa duas bases SQLite separadas, cada uma responsabilizando-se por um contexto distinto (padrão microserviços):
+Este projeto usa duas bases SQLite separadas, cada uma responsabilizando-se por um contexto distinto (padrão microserviços). Separar os bancos facilita isolamento de responsabilidade e escalonamento independente.
 
-- `denuncias_coments.db` — dados de usuários e autenticação/autorização.
-- `usuarios.db` — dados de denúncias e comentários.
+![Diagrama MER - Usuários](./mer-usuarios.png)
 
-Separar os bancos facilita isolamento de responsabilidade e escalonamento independente. As imagens MER no repositório ilustram o modelo lógico/relacional:
+Descrição: dados de usuários e autenticação/autorização.
 
-- `mer-usuarios.png` (modelo de usuários)
-- `mer-denuncias-coments.png` (modelo de denúncias e comentários)
+![Diagrama MER - Denúncias e Comentários](./mer-denuncias-coments.png)
 
-> Observação: os nomes dos arquivos de banco são os usados pelo projeto; ajuste os caminhos conforme sua instalação/ambiente.
+Descrição: dados de denúncias e comentários.
 
 ### Scripts DDL (SQLite)
 
