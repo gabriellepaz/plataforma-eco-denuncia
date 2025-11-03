@@ -23,7 +23,7 @@ Este projeto usa duas bases SQLite separadas, cada uma responsabilizando-se por 
 
 Descrição: dados de usuários e autenticação/autorização.
 
-![Diagrama MER - Denúncias e Comentários](./mer-denuncias-coments.png)
+![Diagrama MER - Denúncias e Comentários](./mer-denuncias_coments.png)
 
 Descrição: dados de denúncias e comentários.
 
