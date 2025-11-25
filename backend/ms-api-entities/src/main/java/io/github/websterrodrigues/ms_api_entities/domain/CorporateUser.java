@@ -25,7 +25,10 @@ public class CorporateUser extends BaseUser {
     @Override
     public String toString() {
         return "CorporateUser{" +
-                "isAuthenticated=" + isAuthenticated +
+                "id=" + getId() +
+                ", email='" + getEmail() + '\'' +
+                ", document='" + getDocument() + '\'' +
+                ", isAuthenticated=" + isAuthenticated +
                 '}';
     }
 }

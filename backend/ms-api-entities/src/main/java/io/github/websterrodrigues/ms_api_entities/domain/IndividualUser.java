@@ -36,7 +36,10 @@ public class IndividualUser extends BaseUser {
     @Override
     public String toString() {
         return "IndividualUser{" +
-                "age=" + age +
+                "id=" + getId() +
+                ", email='" + getEmail() + '\'' +
+                ", document='" + getDocument() + '\'' +
+                ", age=" + age +
                 ", sex='" + sex + '\'' +
                 '}';
     }
