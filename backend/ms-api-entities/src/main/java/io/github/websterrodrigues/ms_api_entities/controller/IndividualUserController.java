@@ -21,27 +21,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class IndividualUserController implements GenericController {
 
-    private final IndividualUserService service;
-    private final IndividualUserMapper mapper;
+    @Autowired
+    private IndividualUserService service;
 
     @Autowired
-    private RoleService roleService;
+    private IndividualUserMapper mapper;
 
-    public IndividualUserController(IndividualUserMapper mapper, IndividualUserService service) {
-        this.mapper = mapper;
-        this.service = service;
-    }
+
 
     @PostMapping
     public ResponseEntity<Void> save(@RequestBody @Valid IndividualUserDTO userDTO){
 
         IndividualUser user = mapper.toEntity(userDTO);
-
-        Set<Role> roles = userDTO.roles().stream()
-                .map(roleService::findByName)
-                .collect(Collectors.toSet());
-        user.setRoles(roles);
-
         service.save(user);
         URI location = generateHeaderLocation(user.getId());
         return ResponseEntity.created(location).build();
