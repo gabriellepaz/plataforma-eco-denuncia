@@ -157,6 +157,24 @@ public class Complaint {
         this.dateUpdateSolutionStatus = dateUpdateSolutionStatus;
     }
 
+    public boolean isAttachmentTotalSizeExceeded() {
+        double totalSizeInMb = 0.0;
+        if (attachments != null) {
+            for (Attachment attachment : attachments) {
+                totalSizeInMb += attachment.getSizeInMb();
+            }
+        }
+        return totalSizeInMb > 10.0;
+    }
+
+    public boolean isOperacionalStatusClosed() {
+        return this.operationStatus == OperationStatus.CLOSED;
+    }
+
+    public boolean isAttachmentLimitExceeded() {
+        return attachments != null && attachments.size() > 10;
+    }
+    
 
     @Override
     public String toString() {
