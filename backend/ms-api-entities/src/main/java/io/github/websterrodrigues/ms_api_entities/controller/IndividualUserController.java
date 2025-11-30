@@ -5,6 +5,7 @@ import io.github.websterrodrigues.ms_api_entities.dto.mappers.IndividualUserMapp
 import io.github.websterrodrigues.ms_api_entities.model.IndividualUser;
 import io.github.websterrodrigues.ms_api_entities.service.IndividualUserService;
 import io.github.websterrodrigues.ms_api_entities.utils.GenericController;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class IndividualUserController implements GenericController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody IndividualUserDTO userDTO){
+    public ResponseEntity<Void> save(@RequestBody @Valid IndividualUserDTO userDTO){
 
         IndividualUser user = mapper.toEntity(userDTO);
         service.save(user);
@@ -33,7 +34,7 @@ public class IndividualUserController implements GenericController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable String id, @RequestBody IndividualUserDTO userDTO){
+    public ResponseEntity<Void> update(@PathVariable String id, @RequestBody @Valid IndividualUserDTO userDTO){
 
         UUID idUser = UUID.fromString(id);
         IndividualUser user = mapper.toEntity(userDTO);
