@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -19,6 +21,8 @@ public class BaseUser {
     private String document;
     private String email;
     private String password;
+
+    private List<String> roles = new ArrayList<>();
 
     public BaseUser(){
 
@@ -63,6 +67,10 @@ public class BaseUser {
         this.password = password;
     }
 
+    public List<String> getRoles() {
+        return roles;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -77,10 +85,10 @@ public class BaseUser {
 
     @Override
     public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
+        return "User {" +
+                "id=" + id +
                 ", document='" + document + '\'' +
-                ", id=" + id +
-                '}';
+                ", email='" + email + '\'' +
+                ", roles=" + roles;
     }
 }
