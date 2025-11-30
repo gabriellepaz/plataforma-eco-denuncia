@@ -20,6 +20,9 @@ public abstract class BaseUser {
     @Column(name = "documento", nullable = false)
     private String document;
 
+    @Column(name = "username")
+    private String name;
+
     @Column(name = "email", nullable = false)
     private String email;
 
@@ -38,10 +41,11 @@ public abstract class BaseUser {
 
     }
 
-    public BaseUser(UUID id, String document, String email, String password) {
+    public BaseUser(UUID id, String document, String email, String name, String password) {
         this.id = id;
         this.document = document;
         this.email = email;
+        this.name = name;
         this.password = password;
     }
 
@@ -83,6 +87,14 @@ public abstract class BaseUser {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

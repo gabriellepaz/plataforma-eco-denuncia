@@ -20,6 +20,9 @@ public record IndividualUserDTO(
     String email,
 
     @NotBlank(message = "Campo obrigatório!")
+    String name,
+
+    @NotBlank(message = "Campo obrigatório!")
     String password,
     Integer age,
     String sex,

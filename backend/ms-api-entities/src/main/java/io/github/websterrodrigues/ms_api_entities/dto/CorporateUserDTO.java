@@ -16,7 +16,10 @@ public record CorporateUserDTO(
         @NotBlank(message = "Campo obrigatório!")
         @Email
         String email,
+
+        @NotBlank(message = "Campo obrigatório!")
         String name,
+
         @NotBlank(message = "Campo obrigatório!")
         String password,
 
