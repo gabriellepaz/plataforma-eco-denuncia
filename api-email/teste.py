@@ -59,6 +59,36 @@ def request_code():
 
 
 
+@app.route('/verify_code', methods=['POST'])
+def verify_code():
+    data = request.get_json()
+    email = data.get('email')
+    user_provided_code = data.get('code')
+
+    if not email or not user_provided_code:
+        return jsonify({"message": "E-mail e código são obrigatórios."}), 400
+
+    otp_entry = OTP.query.filter_by(email=email).first()
+
+    if not otp_entry:
+        return jsonify({"message": "E-mail não encontrado ou código OTP não solicitado."}), 404
+
+    expiration_minutes = 5
+    if (datetime.datetime.now() - otp_entry.created_at).total_seconds() > (expiration_minutes * 60):
+        db.session.delete(otp_entry)
+        db.session.commit()
+        return jsonify({"message": "Código OTP expirado. Por favor, solicite um novo."}), 400
+
+    if verify_hashed_code(user_provided_code, otp_entry.hashed_code):
+        db.session.delete(otp_entry)
+        db.session.commit()
+        return jsonify({"message": "Autenticação bem-sucedida!", "authenticated": True}), 200
+    else:
+        return jsonify({"message": "Código OTP inválido.", "authenticated": False}), 401
+
+
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
