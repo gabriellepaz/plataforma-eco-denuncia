@@ -1,13 +1,8 @@
 package io.github.websterrodrigues.ms_api_entities.model;
 
 
-import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
 
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -26,10 +21,6 @@ public class BaseUser {
 
     @Column(name = "senha", nullable = false)
     private String password;
-
-    @Type(ListArrayType.class)
-    @Column(name = "roles", columnDefinition = "varchar[]")
-    private List<String> roles = new ArrayList<>();
 
     public BaseUser(){
 
@@ -74,10 +65,6 @@ public class BaseUser {
         this.password = password;
     }
 
-    public List<String> getRoles() {
-        return roles;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -92,10 +79,10 @@ public class BaseUser {
 
     @Override
     public String toString() {
-        return "User {" +
-                "id=" + id +
-                ", document='" + document + '\'' +
+        return "BaseUser{" +
+                "document='" + document + '\'' +
+                ", id=" + id +
                 ", email='" + email + '\'' +
-                ", roles=" + roles;
+                ", password='" + password + '\'';
     }
 }

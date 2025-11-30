@@ -3,13 +3,17 @@ spring:
     name: ms-api-entities
   datasource:
     url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
     username: sa
     password: sa
+    driver-class-name: org.h2.Driver
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate.format_sql: true
+  h2:
+    console:
+      enabled: true
+
 
