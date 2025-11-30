@@ -19,6 +19,18 @@ class OTP(db.Model):
     def __repr__(self):
         return f'<OTP {self.email}>'
 
+
+def generate_otp_code(length=6):
+    return ''.join(secrets.choice('0123456789') for _ in range(length))
+
+def hash_code(plain_code):
+    hashed = bcrypt.hashpw(plain_code.encode('utf-8'), bcrypt.gensalt())
+    return hashed.decode('utf-8')
+
+def verify_hashed_code(plain_code, hashed_code):
+    return bcrypt.checkpw(plain_code.encode('utf-8'), hashed_code.encode('utf-8'))
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
