@@ -1,12 +1,10 @@
 package io.github.websterrodrigues.ms_api_entities.dto;
 
-import io.github.websterrodrigues.ms_api_entities.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
-import java.util.List;
 import java.util.Set;
 
 public record IndividualUserDTO(

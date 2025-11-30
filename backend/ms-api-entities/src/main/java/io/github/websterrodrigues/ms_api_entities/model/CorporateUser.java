@@ -13,9 +13,13 @@ public class CorporateUser extends BaseUser {
     @Column(name = "esta_autenticado")
     private Boolean isAuthenticated = false;
 
-    public CorporateUser(UUID id, String document, String email, String password, Boolean isAuthenticated) {
-        super(id, document, email, password);
+    public CorporateUser(UUID id, String document, String email, String name, String password, Boolean isAuthenticated) {
+        super(id, document, email, name, password);
         this.isAuthenticated = isAuthenticated;
+    }
+
+    public CorporateUser() {
+
     }
 
     public Boolean getAuthenticated() {

@@ -16,8 +16,8 @@ public class IndividualUser extends BaseUser {
     @Column(name = "sexo")
     private String sex;
 
-    public IndividualUser(UUID id, String document, String email, String password, Integer age, String sex) {
-        super(id, document, email, password);
+    public IndividualUser(UUID id, String document, String email, String name, String password, Integer age, String sex) {
+        super(id, document, email, name, password);
         this.age = age;
         this.sex = sex;
     }

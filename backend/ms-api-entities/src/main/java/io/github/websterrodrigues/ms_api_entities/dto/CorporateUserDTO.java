@@ -11,7 +11,7 @@ public record CorporateUserDTO(
 
         @NotBlank(message = "Campo obrigatório!")
         @Size(min = 11, max = 14, message = "Campo não corresponde os padrões de tamanho!")
-        String documento,
+        String document,
 
         @NotBlank(message = "Campo obrigatório!")
         @Email
@@ -24,5 +24,7 @@ public record CorporateUserDTO(
         String password,
 
         @NotEmpty(message = "Declare ao menos uma role!")
-        Set<@NotBlank(message = "Verifique se não há campos vazios!") String> roles) {
+        Set<@NotBlank(message = "Verifique se não há campos vazios!") String> roles,
+
+        Boolean isAuthenticated) {
 }

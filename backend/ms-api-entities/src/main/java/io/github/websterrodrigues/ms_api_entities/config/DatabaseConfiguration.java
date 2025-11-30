@@ -41,3 +41,4 @@
 //        return new HikariDataSource(config); //Hikari DataSource exige uma HikariConfig
 //    }
 //}
+//Desativado temporariamente para o h2 enquanto não há modelagem de banco complexa
