@@ -14,25 +14,6 @@ public class RoleService {
     @Autowired
     private RoleRepository repository;
 
-    public Role save(Role role){
-        return repository.save(role);
-    }
-
-    public Role findById(Long id){
-        Optional<Role> obj =  repository.findById(id);
-        return obj.orElseThrow(() -> new EntityNotFoundException(String.format("User não encontrado! ID: %s", id)));
-    }
-
-    public void update(Role role){
-        findById(role.getId());
-        repository.save(role);
-    }
-
-    public void delete(Long id){
-        Role role = findById(id);
-        repository.delete(role);
-    }
-    
     public Role findByName(String name){
         return repository.findByName(name);
     }
