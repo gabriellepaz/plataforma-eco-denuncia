@@ -1,7 +1,6 @@
-package io.github.websterrodrigues.ms_api_entities.domain;
+package io.github.websterrodrigues.ms_api_entities.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 import java.util.UUID;
 
