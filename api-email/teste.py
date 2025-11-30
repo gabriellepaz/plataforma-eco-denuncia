@@ -89,6 +89,24 @@ def verify_code():
 
 
 
+@app.route('/get_encrypted_code/<string:email>', methods=['GET')
+def get_encrypted_code(email):
+    if not email:
+        return jsonify({"message": "E-mail é obrigatório."}), 400
+
+    otp_entry = OTP.query.filter_by(email=email).first()
+
+    if otp_entry:
+        return jsonify({
+            "email": otp_entry.email,
+            "hashed_code": otp_entry.hashed_code,
+            "created_at": otp_entry.created_at.isoformat()
+        }), 200
+    else:
+        return jsonify({"message": "Nenhum código OTP encontrado para este e-mail."}), 404
+
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
