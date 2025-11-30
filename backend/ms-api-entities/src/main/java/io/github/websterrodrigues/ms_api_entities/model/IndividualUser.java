@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "individual_users")
+@Table(name = "tb_individual_users")
 public class IndividualUser extends BaseUser {
 
     @Column(name = "idade")
@@ -15,14 +15,6 @@ public class IndividualUser extends BaseUser {
 
     @Column(name = "sexo")
     private String sex;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "individual_user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
 
     public IndividualUser(UUID id, String document, String email, String password, Integer age, String sex) {
         super(id, document, email, password);
@@ -46,13 +38,6 @@ public class IndividualUser extends BaseUser {
         this.sex = sex;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
 
     @Override
     public String toString() {

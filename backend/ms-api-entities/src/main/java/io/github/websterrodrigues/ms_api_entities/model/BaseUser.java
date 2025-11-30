@@ -3,11 +3,15 @@ package io.github.websterrodrigues.ms_api_entities.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
-@MappedSuperclass
-public class BaseUser {
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "tb_users")
+public abstract class BaseUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,6 +25,14 @@ public class BaseUser {
 
     @Column(name = "senha", nullable = false)
     private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     public BaseUser(){
 
@@ -63,6 +75,14 @@ public class BaseUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Override
