@@ -27,12 +27,12 @@ public class UserService {
     }
 
     public void update(IndividualUser user){
-        repository.findById(user.getId());
+        findById(user.getId());
         repository.save(user);
     }
 
     public void delete(UUID id){
-        Optional<IndividualUser> user =  repository.findById(id);
-        repository.delete(user.get());
+       IndividualUser user = findById(id);
+        repository.delete(user);
     }
 }
