@@ -22,6 +22,10 @@ public class IndividualUser extends BaseUser {
         this.sex = sex;
     }
 
+    public IndividualUser() {
+
+    }
+
     public Integer getAge() {
         return age;
     }
