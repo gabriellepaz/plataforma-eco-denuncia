@@ -42,6 +42,15 @@ public class CorporateUserService {
         repository.delete(corporateUser);
     }
 
+//Metodo desativado devido dependência da api e-mail
+//    public void changeAuthenticatedStatus(UUID id){
+//        if(req){
+//        CorporateUser corporateUser = findById(id);
+//        corporateUser.setAuthenticated(true);
+//        repository.save(corporateUser);
+//        }
+//    }
+
     private void mapRoles(CorporateUser corporateUser){
         Set<Role> roles = corporateUser.getRoles().stream()
                 .map(role -> roleService.findByName(role.getName()))

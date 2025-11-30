@@ -11,7 +11,7 @@ import java.util.UUID;
 public class CorporateUser extends BaseUser {
 
     @Column(name = "esta_autenticado")
-    private Boolean isAuthenticated;
+    private Boolean isAuthenticated = false;
 
     public CorporateUser(UUID id, String document, String email, String password, Boolean isAuthenticated) {
         super(id, document, email, password);
