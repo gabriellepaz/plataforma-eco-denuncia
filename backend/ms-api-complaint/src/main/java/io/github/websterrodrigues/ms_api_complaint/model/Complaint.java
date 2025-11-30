@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,9 +29,9 @@ public class Complaint {
     @Column(name = "data_criacao", nullable = false)
     private LocalDate creationDate;
 
-    @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<Attachment> attachments;
+    private List<Attachment> attachments = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private SolutionStatus solutionStatus;
@@ -174,7 +175,7 @@ public class Complaint {
     public boolean isAttachmentLimitExceeded() {
         return attachments != null && attachments.size() > 10;
     }
-    
+
 
     @Override
     public String toString() {
