@@ -1,13 +1,19 @@
 package io.github.websterrodrigues.ms_api_entities.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import java.util.UUID;
 
 @Entity
+@Table(name = "individual_users")
 public class IndividualUser extends BaseUser {
 
+    @Column(name = "idade")
     private Integer age;
+
+    @Column(name = "sexo")
     private String sex;
 
     public IndividualUser(UUID id, String document, String email, String password, Integer age, String sex) {

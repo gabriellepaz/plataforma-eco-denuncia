@@ -1,10 +1,10 @@
 package io.github.websterrodrigues.ms_api_entities.model;
 
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
+import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +18,17 @@ public class BaseUser {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "documento", nullable = false)
     private String document;
+
+    @Column(name = "email", nullable = false)
     private String email;
+
+    @Column(name = "senha", nullable = false)
     private String password;
 
+    @Type(ListArrayType.class)
+    @Column(name = "roles", columnDefinition = "varchar[]")
     private List<String> roles = new ArrayList<>();
 
     public BaseUser(){

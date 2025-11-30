@@ -1,13 +1,18 @@
 package io.github.websterrodrigues.ms_api_entities.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.Type;
 
 import java.util.UUID;
 
 @Entity
+@Table(name = "corporate_users")
 public class CorporateUser extends BaseUser {
 
-   private Boolean isAuthenticated;
+    @Column(name = "esta_autenticado")
+    private Boolean isAuthenticated;
 
     public CorporateUser(UUID id, String document, String email, String password, Boolean isAuthenticated) {
         super(id, document, email, password);
