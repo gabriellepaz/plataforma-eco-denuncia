@@ -1,6 +1,8 @@
 package io.github.websterrodrigues.ms_api_complaint.controller;
 
+import io.github.websterrodrigues.ms_api_complaint.dto.CloseComplaintDTO;
 import io.github.websterrodrigues.ms_api_complaint.dto.ComplaintDTO;
+import io.github.websterrodrigues.ms_api_complaint.dto.mapper.ComplaintMapper;
 import io.github.websterrodrigues.ms_api_complaint.model.Complaint;
 import io.github.websterrodrigues.ms_api_complaint.service.ComplaintService;
 import io.github.websterrodrigues.ms_api_complaint.utils.GenericController;
@@ -19,6 +21,9 @@ public class ComplaintController implements GenericController {
     @Autowired
     private ComplaintService service;
 
+    @Autowired
+    private ComplaintMapper mapper;
+
     @PostMapping
     public ResponseEntity<Void> save(@RequestBody @Valid ComplaintDTO complaintDTO){
 
@@ -29,11 +34,9 @@ public class ComplaintController implements GenericController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> closeComplaint(@PathVariable String id, @RequestBody @Valid CloseComplaintDTO complaintDTO){
+    public ResponseEntity<Void> closeComplaint(@PathVariable String id){
 
-        UUID idUser = UUID.fromString(id);
-        Complaint complaint = mapper.toEntity(complaintDTO);
-        complaint.setId(idUser); //Garantir que o ID seja definido corretamente NÃO REMOVER
+        Complaint complaint = service.findById(UUID.fromString(id));
         service.closedComplaint(complaint);
         return ResponseEntity.noContent().build();
     }
