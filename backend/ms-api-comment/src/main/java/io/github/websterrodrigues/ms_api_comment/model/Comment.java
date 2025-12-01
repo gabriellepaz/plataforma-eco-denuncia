@@ -31,7 +31,7 @@ public class Comment {
     @Column(name = "id_denuncia")
     private UUID idComplaint;
 
-    @OneToMany(mappedBy = "complaint", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Attachment> attachments = new ArrayList<>();
 
