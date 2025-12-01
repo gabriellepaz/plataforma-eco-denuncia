@@ -25,6 +25,9 @@ public class Comment {
     @Column(name = "id_autor")
     private UUID idAuthor;
 
+    @Column(name = "id_comentario_pai")
+    private UUID idParentCommentId;
+
     @Column(name = "id_denuncia")
     private UUID idComplaint;
 
@@ -32,9 +35,72 @@ public class Comment {
     @JsonIgnore
     private List<Attachment> attachments = new ArrayList<>();
 
+    public Comment(){
 
+    }
 
+    public Comment(UUID id, String message, LocalDate creationDate, UUID idAuthor, UUID idParentCommentId, UUID idComplaint) {
+        this.id = id;
+        this.message = message;
+        this.creationDate = creationDate;
+        this.idAuthor = idAuthor;
+        this.idParentCommentId = idParentCommentId;
+        this.idComplaint = idComplaint;
+    }
 
+    public UUID getId() {
+        return id;
+    }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public UUID getIdAuthor() {
+        return idAuthor;
+    }
+
+    public void setIdAuthor(UUID idAuthor) {
+        this.idAuthor = idAuthor;
+    }
+
+    public UUID getIdParentCommentId() {
+        return idParentCommentId;
+    }
+
+    public void setIdParentCommentId(UUID idParentCommentId) {
+        this.idParentCommentId = idParentCommentId;
+    }
+
+    public UUID getIdComplaint() {
+        return idComplaint;
+    }
+
+    public void setIdComplaint(UUID idComplaint) {
+        this.idComplaint = idComplaint;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
+    }
 }
