@@ -22,7 +22,7 @@ public class CommentService {
 
     public Comment findById(UUID id){
         Optional<Comment> obj =  repository.findById(id);
-        return obj.orElseThrow(() -> new EntityNotFoundException(String.format("Denuncia não encontrada! ID: %s", id)));
+        return obj.orElseThrow(() -> new EntityNotFoundException(String.format("Comentário não encontrada! ID: %s", id)));
     }
 
     public void delete(UUID id){
