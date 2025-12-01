@@ -36,7 +36,7 @@ public class Attachment {
     private LocalDateTime dateAttachmentUpdatedate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "complaint_id")
+    @JoinColumn(name = "comment_id")
     private Comment comment;
 
     public Attachment() {
