@@ -2,6 +2,7 @@ package io.github.websterrodrigues.ms_api_complaint.dto;
 
 import io.github.websterrodrigues.ms_api_complaint.model.enums.OperationStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public record ComplaintDTO(
 
         OperationStatus operationStatus,
 
-        @NotBlank(message = "Campo obrigatório!")
+        @NotNull(message = "Campo obrigatório!")
         UUID idAuthor,
 
         UUID idAssociatedCompany) {

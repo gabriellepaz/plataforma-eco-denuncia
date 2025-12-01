@@ -4,6 +4,7 @@ import io.github.websterrodrigues.ms_api_complaint.exception.EntityNotFoundExcep
 import io.github.websterrodrigues.ms_api_complaint.model.Attachment;
 import io.github.websterrodrigues.ms_api_complaint.model.Complaint;
 import io.github.websterrodrigues.ms_api_complaint.model.enums.OperationStatus;
+import io.github.websterrodrigues.ms_api_complaint.repository.AttachmentRepository;
 import io.github.websterrodrigues.ms_api_complaint.repository.ComplaintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ComplaintService {
@@ -20,7 +20,7 @@ public class ComplaintService {
     private ComplaintRepository repository;
 
     @Autowired
-    private AttachmentService attachmentService;
+    private AttachmentRepository attachmentRepository;
 
     public Complaint save(Complaint complaint){
         return repository.save(complaint);
@@ -54,7 +54,7 @@ public class ComplaintService {
         }
 
         complaint.getAttachments()
-                .forEach(attachmentService::update);
+                .forEach(attachmentRepository::save);
     }
 
 
