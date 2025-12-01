@@ -1,113 +1,209 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-import secrets
-import bcrypt
-import datetime
+from flask_mail import Mail, Message
 import os
+import hashlib
+import secrets
+import random
+from dotenv import load_dotenv
+
+# --- Carrega as variáveis de ambiente do arquivo .env ---
+# Certifique-se de que o arquivo .env está na mesma pasta que este script.
+load_dotenv()
+
+# --- LINHAS DE DEBUG ADICIONADAS PARA VERIFICAR O .ENV ---
+print(f"DEBUG: MAIL_SERVER lido: {os.environ.get('MAIL_SERVER')}")
+print(f"DEBUG: MAIL_PORT lido: {os.environ.get('MAIL_PORT')}")
+print(f"DEBUG: MAIL_USE_TLS lido: {os.environ.get('MAIL_USE_TLS')}")
+print(f"DEBUG: MAIL_USE_SSL lido: {os.environ.get('MAIL_USE_SSL')}") # Adicionado para verificar MAIL_USE_SSL
+print(f"DEBUG: MAIL_USERNAME lido: {os.environ.get('MAIL_USERNAME')}")
+# Para a senha, vamos apenas verificar se está presente, não exibi-la por segurança
+print(f"DEBUG: MAIL_PASSWORD presente: {'Sim' if os.environ.get('MAIL_PASSWORD') else 'Não'}")
+# --- FIM DAS LINHAS DE DEBUG ---
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///otp.db'
+
+# --- Configuração do Banco de Dados ---
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(basedir, 'verification_codes.db')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-class OTP(db.Model):
+# --- Configurações do Flask-Mail para GMAIL ---
+# As configurações são carregadas das variáveis de ambiente definidas no arquivo .env
+# Isso garante que suas credenciais de e-mail não fiquem expostas no código.
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com') # Default para Gmail
+app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587)) # Default para 587
+app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True').lower() in ('true', '1', 't') # Gmail usa TLS
+app.config['MAIL_USE_SSL'] = os.environ.get('MAIL_USE_SSL', 'False').lower() in ('true', '1', 't') # Gmail usa TLS, não SSL direto na porta 587
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+
+mail = Mail(app)
+
+# --- Chave de Encriptação ---
+SECRET_KEY_PATH = os.path.join(basedir, 'secret.key')
+
+def load_or_generate_key(path):
+    """Carrega uma chave de encriptação existente ou gera uma nova."""
+    if os.path.exists(path):
+        with open(path, 'rb') as f:
+            return f.read()
+    else:
+        key = secrets.token_bytes(32) # Gera uma chave de 32 bytes (256 bits)
+        with open(path, 'wb') as f:
+            f.write(key)
+        print(f"Chave de encriptação gerada e salva em: {path}")
+        return key
+
+ENCRYPTION_KEY = load_or_generate_key(SECRET_KEY_PATH)
+
+# --- Modelagem do Banco de Dados ---
+class VerificationCode(db.Model):
+    """Modelo para armazenar códigos de verificação encriptados."""
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    hashed_code = db.Column(db.String(128), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
+    encrypted_code = db.Column(db.String(128), nullable=False) # Armazena o hash do código
 
     def __repr__(self):
-        return f'<OTP {self.email}>'
+        return f'<VerificationCode {self.email}>'
 
+# --- Funções Auxiliares ---
+def generate_random_code():
+    """Gera um código de verificação aleatório de 6 dígitos."""
+    return str(random.randint(100000, 999999))
 
-def generate_otp_code(length=6):
-    return ''.join(secrets.choice('0123456789') for _ in range(length))
+def encrypt_data(data):
+    """Encripta um dado usando SHA256 com uma chave secreta."""
+    hashed_data = hashlib.sha256(ENCRYPTION_KEY + data.encode('utf-8')).hexdigest()
+    return hashed_data
 
-def hash_code(plain_code):
-    hashed = bcrypt.hashpw(plain_code.encode('utf-8'), bcrypt.gensalt())
-    return hashed.decode('utf-8')
+# --- Envio REAL de E-mail ---
+def send_real_email(to_email, code):
+    """Envia um e-mail com o código de verificação usando Flask-Mail."""
+    # Verifica se as credenciais de e-mail foram configuradas via .env
+    if not app.config['MAIL_USERNAME'] or not app.config['MAIL_PASSWORD']:
+        print("!!! ERRO: Credenciais de e-mail (MAIL_USERNAME/MAIL_PASSWORD) não configuradas no .env. !!!")
+        raise Exception("Credenciais de e-mail ausentes. Não é possível enviar e-mail.")
 
-def verify_hashed_code(plain_code, hashed_code):
-    return bcrypt.checkpw(plain_code.encode('utf-8'), hashed_code.encode('utf-8'))
+    msg = Message(
+        subject="Seu Código de Verificação",
+        sender=app.config['MAIL_USERNAME'], # O e-mail remetente configurado no .env
+        recipients=[to_email]
+    )
+    msg.body = f"Olá,\n\nSeu código de verificação é: {code}\n\nPor favor, use este código para completar sua ação."
+    msg.html = f"<html><body><p>Olá,</p><p>Seu código de verificação é: <strong>{code}</strong></p><p>Por favor, use este código para completar sua ação.</p></body></html>"
 
+    try:
+        mail.send(msg)
+        print(f"\n--- EMAIL DE VERIFICAÇÃO ENVIADO REALMENTE ---")
+        print(f"De: {app.config['MAIL_USERNAME']}")
+        print(f"Para: {to_email}")
+        print(f"Assunto: Seu Código de Verificação")
+        print(f"Código: {code}")
+        print(f"------------------------------------------\n")
+        return True # Indica sucesso
+    except Exception as e:
+        print(f"\n!!! ERRO AO ENVIAR E-MAIL REAL PARA: {to_email} !!!")
+        print(f"Detalhes do Erro: {e}\n") # Imprime o erro detalhado
+        raise # Re-lança a exceção para que a rota possa tratá-la
 
+# --- Rotas da API ---
 
-@app.route('/request_code', methods=['POST'])
-def request_code():
+@app.route('/send-verification-code', methods=['POST'])
+def send_verification_code():
+    """Rota para gerar e enviar um código de verificação por e-mail."""
     data = request.get_json()
-    email = data.get('email')
+    if not data or 'email' not in data:
+        return jsonify({"message": "Email é obrigatório"}), 400
 
-    if not email:
-        return jsonify({"message": "E-mail é obrigatório."}), 400
+    user_email = data['email']
+    code = generate_random_code()
+    encrypted_code = encrypt_data(code)
 
-    otp_code = generate_otp_code()
-    hashed_otp = hash_code(otp_code)
+    # --- INÍCIO DEBUG PARA SEND-VERIFICATION-CODE ---
+    print(f"\n--- DEBUG SEND-VERIFICATION-CODE ---")
+    print(f"Email para envio: {user_email}")
+    print(f"Código gerado (para terminal): {code}")
+    print(f"Código encriptado para armazenamento (HASH gerado): {encrypted_code}")
+    # --- FIM DEBUG ---
 
-    otp_entry = OTP.query.filter_by(email=email).first()
-    if otp_entry:
-        otp_entry.hashed_code = hashed_otp
-        otp_entry.created_at = datetime.datetime.now()
-    else:
-        otp_entry = OTP(email=email, hashed_code=hashed_otp)
-        db.session.add(otp_entry)
-    
-    db.session.commit()
+    try:
+        # CHAMA A FUNÇÃO DE ENVIO REAL DE E-MAIL
+        send_real_email(user_email, code)
 
-    print(f"DEBUG: Enviando código OTP {otp_code} para {email}")
+        existing_entry = VerificationCode.query.filter_by(email=user_email).first()
+        if existing_entry:
+            old_encrypted_code = existing_entry.encrypted_code
+            existing_entry.encrypted_code = encrypted_code
+            db.session.commit()
+            print(f"Entry EXISTENTE para {user_email} ATUALIZADA no DB.")
+            print(f"Hash ANTERIOR no DB: {old_encrypted_code}")
+            print(f"Hash NOVO NO DB (após commit): {existing_entry.encrypted_code}\n")
+        else:
+            new_entry = VerificationCode(email=user_email, encrypted_code=encrypted_code)
+            db.session.add(new_entry)
+            db.session.commit()
+            print(f"NOVA entry para {user_email} ADICIONADA no DB.")
+            print(f"Hash ADICIONADO NO DB (após commit): {new_entry.encrypted_code}\n")
 
-    return jsonify({"message": "Código OTP enviado com sucesso para o e-mail."}), 200
+        return jsonify({"message": "Código de verificação enviado para seu email."}), 200
+
+    except Exception as e:
+        print(f"Erro geral na rota /send-verification-code para {user_email}: {e}\n")
+        return jsonify({"message": "Falha ao enviar o código de verificação. Tente novamente mais tarde."}), 500
 
 
-
-@app.route('/verify_code', methods=['POST'])
+@app.route('/verify-code', methods=['POST'])
 def verify_code():
+    """Rota para verificar o código de verificação enviado pelo usuário."""
     data = request.get_json()
-    email = data.get('email')
-    user_provided_code = data.get('code')
+    if not data or 'email' not in data or 'code' not in data:
+        return jsonify({"message": "Email e código são obrigatórios"}), 400
 
-    if not email or not user_provided_code:
-        return jsonify({"message": "E-mail e código são obrigatórios."}), 400
+    user_email = data['email']
+    user_code = data['code']
 
-    otp_entry = OTP.query.filter_by(email=email).first()
+    # --- INÍCIO DEBUG PARA VERIFY-CODE ---
+    print(f"\n--- DEBUG VERIFY-CODE ---")
+    print(f"Email recebido: {user_email}")
+    print(f"Código do usuário recebido: {user_code}")
+    # --- FIM DEBUG ---
 
-    if not otp_entry:
-        return jsonify({"message": "E-mail não encontrado ou código OTP não solicitado."}), 404
+    encrypted_user_code = encrypt_data(user_code)
 
-    expiration_minutes = 5
-    if (datetime.datetime.now() - otp_entry.created_at).total_seconds() > (expiration_minutes * 60):
-        db.session.delete(otp_entry)
-        db.session.commit()
-        return jsonify({"message": "Código OTP expirado. Por favor, solicite um novo."}), 400
+    # --- CONTINUAÇÃO DEBUG PARA VERIFY-CODE ---
+    print(f"Código do usuário encriptado (do Postman): {encrypted_user_code}")
+    # --- FIM DEBUG ---
 
-    if verify_hashed_code(user_provided_code, otp_entry.hashed_code):
-        db.session.delete(otp_entry)
-        db.session.commit()
-        return jsonify({"message": "Autenticação bem-sucedida!", "authenticated": True}), 200
+    verification_entry = VerificationCode.query.filter_by(email=user_email).first()
+
+    if verification_entry:
+        # --- CONTINUAÇÃO DEBUG PARA VERIFY-CODE ---
+        print(f"Entrada no DB encontrada para {user_email}.")
+        print(f"Código encriptado no DB: {verification_entry.encrypted_code}")
+        # --- FIM DEBUG ---
+        if verification_entry.encrypted_code == encrypted_user_code:
+            # Código verificado com sucesso, você pode querer deletar o código aqui para uso único
+            db.session.delete(verification_entry)
+            db.session.commit()
+            # --- CONTINUAÇÃO DEBUG PARA VERIFY-CODE ---
+            print(f"Resultado da comparação: SUCESSO - Códigos encriptados correspondem e entry deletada do DB.\n")
+            # --- FIM DEBUG ---
+            return jsonify({"message": "Código verificado com sucesso."}), 200
+        else:
+            # --- CONTINUAÇÃO DEBUG PARA VERIFY-CODE ---
+            print(f"Resultado da comparação: FALHA - Códigos encriptados NÃO correspondem.\n")
+            # --- FIM DEBUG ---
+            return jsonify({"message": "Email ou código inválido."}), 400
     else:
-        return jsonify({"message": "Código OTP inválido.", "authenticated": False}), 401
+        # --- CONTINUAÇÃO DEBUG PARA VERIFY-CODE ---
+        print(f"Resultado da busca no DB: FALHA - Nenhuma entrada encontrada no DB para {user_email}.\n")
+        # --- FIM DEBUG ---
+        return jsonify({"message": "Email ou código inválido."}), 400
 
 
-
-
-@app.route('/get_encrypted_code/<string:email>', methods=['GET')
-def get_encrypted_code(email):
-    if not email:
-        return jsonify({"message": "E-mail é obrigatório."}), 400
-
-    otp_entry = OTP.query.filter_by(email=email).first()
-
-    if otp_entry:
-        return jsonify({
-            "email": otp_entry.email,
-            "hashed_code": otp_entry.hashed_code,
-            "created_at": otp_entry.created_at.isoformat()
-        }), 200
-    else:
-        return jsonify({"message": "Nenhum código OTP encontrado para este e-mail."}), 404
-
-
-
+# --- Execução da Aplicação ---
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
+    # NÃO coloque db.create_all() aqui. Ele deve ser chamado APENAS pelo create_db.py para evitar recriar tabelas
     app.run(debug=True)
