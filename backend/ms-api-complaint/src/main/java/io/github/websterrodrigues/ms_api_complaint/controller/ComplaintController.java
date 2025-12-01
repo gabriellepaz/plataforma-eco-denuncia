@@ -1,6 +1,5 @@
 package io.github.websterrodrigues.ms_api_complaint.controller;
 
-import io.github.websterrodrigues.ms_api_complaint.dto.CloseComplaintDTO;
 import io.github.websterrodrigues.ms_api_complaint.dto.ComplaintDTO;
 import io.github.websterrodrigues.ms_api_complaint.dto.mapper.ComplaintMapper;
 import io.github.websterrodrigues.ms_api_complaint.model.Complaint;
