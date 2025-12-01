@@ -65,6 +65,7 @@ public class ComplaintService {
 
     public void closedComplaint(Complaint complaint){
         complaint.setOperationStatus(OperationStatus.CLOSED);
+        repository.save(complaint);
     }
 
 
