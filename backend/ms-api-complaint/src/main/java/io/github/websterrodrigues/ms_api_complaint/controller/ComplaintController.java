@@ -67,7 +67,15 @@ public class ComplaintController implements GenericController {
 
     }
 
-    
+    @PostMapping("/{id}/attachment/list")
+    public ResponseEntity<Void> saveFileList(@PathVariable("id") String complaintId, @RequestParam("files") List<MultipartFile> files) throws IOException {
+
+        attachmentService.saveFileList(UUID.fromString(complaintId), files);
+        return ResponseEntity.noContent().build();
+
+    }
+
+
 
 
 }

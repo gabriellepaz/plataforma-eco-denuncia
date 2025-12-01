@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -56,6 +57,26 @@ public class AttachmentService {
         complaintService.save(complaint);
 
     }
+
+    public void saveFileList(UUID id, List<MultipartFile> files) throws IOException {
+        Complaint complaint = complaintService.findById(id);
+
+        for (MultipartFile file : files) {
+
+            Attachment attachment = new Attachment();
+            attachment.setComplaint(complaint);
+
+            attachment.setFileName(file.getOriginalFilename());
+            attachment.setExtension(extractExtension(file.getOriginalFilename()));
+            attachment.setSizeInMb(file.getSize() / (1024.0 * 1024.0));
+            attachment.setFileContent(file.getBytes());
+
+            complaint.getAttachments().add(attachment);
+        }
+
+        complaintService.save(complaint);
+    }
+
 
     private String extractExtension(String fileName) {
         if (fileName == null || !fileName.contains(".")) return "";
