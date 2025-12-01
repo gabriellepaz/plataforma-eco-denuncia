@@ -1,11 +1,9 @@
 package io.github.websterrodrigues.ms_api_complaint.dto;
 
-import io.github.websterrodrigues.ms_api_complaint.model.Attachment;
 import io.github.websterrodrigues.ms_api_complaint.model.enums.OperationStatus;
 import jakarta.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 public record ComplaintDTO(
@@ -17,8 +15,6 @@ public record ComplaintDTO(
         String message,
 
         LocalDate creationDate,
-
-        List<Attachment> attachments,
 
         OperationStatus operationStatus,
 

@@ -24,6 +24,9 @@ public class Attachment {
     @Column(name = "tamanho_mb", nullable = false)
     private Double sizeInMb;
 
+    @Column(name = "extensao_arquivo")
+    private String extension;
+
     @CreatedDate
     @Column(name = "data_anexo", updatable = false)
     private LocalDateTime attachmentDate;
@@ -40,11 +43,13 @@ public class Attachment {
 
     }
 
-    public Attachment(UUID id, String fileName, Double sizeInMb, LocalDateTime attachmentDate,
-                      LocalDateTime dateAttachmentUpdatedate, Complaint complaint) {
+    public Attachment(UUID id, byte[] fileContent, String fileName, Double sizeInMb, String extension,
+                      LocalDateTime attachmentDate, LocalDateTime dateAttachmentUpdatedate, Complaint complaint) {
         this.id = id;
+        this.fileContent = fileContent;
         this.fileName = fileName;
         this.sizeInMb = sizeInMb;
+        this.extension = extension;
         this.attachmentDate = attachmentDate;
         this.dateAttachmentUpdatedate = dateAttachmentUpdatedate;
         this.complaint = complaint;
@@ -105,4 +110,13 @@ public class Attachment {
     public void setComplaint(Complaint complaint) {
         this.complaint = complaint;
     }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
 }
