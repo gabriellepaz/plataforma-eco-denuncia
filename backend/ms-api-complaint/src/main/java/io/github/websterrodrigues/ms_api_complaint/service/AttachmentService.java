@@ -2,7 +2,6 @@ package io.github.websterrodrigues.ms_api_complaint.service;
 
 import io.github.websterrodrigues.ms_api_complaint.exception.EntityNotFoundException;
 import io.github.websterrodrigues.ms_api_complaint.model.Attachment;
-import io.github.websterrodrigues.ms_api_complaint.model.Complaint;
 import io.github.websterrodrigues.ms_api_complaint.repository.AttachmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
