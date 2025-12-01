@@ -14,11 +14,12 @@ public class Attachment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "arquivo")
-    private String file;
+    @Lob
+    @Column(name = "conteudo_arquivo")
+    private byte[] fileContent;
 
     @Column(name = "nome_arquivo")
-    private String extension;
+    private String fileName;
 
     @Column(name = "tamanho_mb", nullable = false)
     private Double sizeInMb;
@@ -39,10 +40,10 @@ public class Attachment {
 
     }
 
-    public Attachment(UUID id, String file, String extension, Double sizeInMb, LocalDateTime attachmentDate, LocalDateTime dateAttachmentUpdatedate, Complaint complaint) {
+    public Attachment(UUID id, String fileName, Double sizeInMb, LocalDateTime attachmentDate,
+                      LocalDateTime dateAttachmentUpdatedate, Complaint complaint) {
         this.id = id;
-        this.file = file;
-        this.extension = extension;
+        this.fileName = fileName;
         this.sizeInMb = sizeInMb;
         this.attachmentDate = attachmentDate;
         this.dateAttachmentUpdatedate = dateAttachmentUpdatedate;
@@ -57,20 +58,20 @@ public class Attachment {
         this.id = id;
     }
 
-    public String getFile() {
-        return file;
+    public byte[] getFileContent() {
+        return fileContent;
     }
 
-    public void setFile(String file) {
-        this.file = file;
+    public void setFileContent(byte[] fileContent) {
+        this.fileContent = fileContent;
     }
 
-    public String getExtension() {
-        return extension;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setExtension(String extension) {
-        this.extension = extension;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public Double getSizeInMb() {
